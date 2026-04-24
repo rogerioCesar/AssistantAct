@@ -1,0 +1,28 @@
+```mermaid
+flowchart TD
+    Client[Cliente / Frontend] --> API[FastAPI API Layer]
+    API --> Service[Service Layer]
+    Service --> Advisor[PriorityAdvisor]
+    Service --> Repository[Repository Layer]
+    Repository --> Storage[(Banco de dados / Persistencia)]
+
+    Advisor --> Service
+    Storage --> Repository
+    Repository --> Service
+    Service --> API
+    API --> Client
+
+    subgraph API_Layer[API]
+        API
+    end
+
+    subgraph Domain_Layer[Aplicacao]
+        Service
+        Advisor
+    end
+
+    subgraph Data_Layer[Dados]
+        Repository
+        Storage
+    end
+```
