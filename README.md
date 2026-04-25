@@ -1,27 +1,29 @@
 # Agenda Diaria Assistida por IA
 
-MVP de micro-API para uma agenda diaria com apoio visual, temporizadores, checklist, secao "o que mudou" e gatilhos inteligentes baseados em contexto.
+MVP de micro-API em FastAPI para gerenciamento de atividades de rotina, com foco em apoio a usuarios autistas por meio de agenda diaria, cartoes visuais, checklists, temporizadores, secao "o que mudou" e sugestao de prioridade assistida por IA.
 
 ## Objetivo
 
-Criar uma API simples e extensivel para apoiar rotinas diarias por meio de cartoes visuais, tarefas guiadas e regras contextuais.
+Fornecer uma base simples, testavel e extensivel para organizar atividades diarias com suporte contextual.
 
-Exemplos de uso:
+A API permite representar atividades da rotina, sugerir prioridade automaticamente e preparar a evolucao para recursos como cartoes visuais, checklists e gatilhos do tipo:
 
-- Se hoje for terca-feira, exibir checklist de saida para terapia.
-- Se houver mudanca na rotina, destacar a secao "o que mudou".
-- Se uma atividade tiver duracao definida, disponibilizar temporizador.
-- Se uma tarefa exigir preparacao, mostrar checklist visual.
+```text
+se terca-feira = terapia
+entao mostrar checklist de saida
+```
 
 ## Stack
 
 - Python
 - FastAPI
+- Pydantic v2
 - Uvicorn
-- Pydantic
-- IA para apoio a geracao de sugestoes, gatilhos e adaptacoes de rotina
+- Pytest
+- HTTPX
+- OpenAI API opcional para sugestao de prioridade
 
-## Como Rodar Localmente
+## Instalacao
 
 ### 1. Clone o repositorio
 
@@ -49,111 +51,162 @@ No Windows:
 pip install -r requirements.txt
 ```
 
-### 4. Rode a API
+## Execucao
+
+Rode a API localmente:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-### 5. Acesse a documentacao interativa
+Acesse a documentacao interativa:
 
 ```text
 http://localhost:8000/docs
 ```
 
-## Estrutura Inicial Sugerida
+Healthcheck:
 
 ```text
-.
-├── app/
-│   ├── main.py
-│   ├── models/
-│   ├── schemas/
-│   ├── routes/
-│   ├── services/
-│   └── rules/
-├── tests/
-├── requirements.txt
-├── .gitignore
-└── README.md
+GET /health
 ```
 
-## Funcionalidades do MVP
+Resposta esperada:
 
-- Cadastro de cartoes visuais de rotina
-- Listagem da agenda diaria
-- Checklists por atividade
-- Temporizadores associados a tarefas
-- Secao "o que mudou" para destacar alteracoes na rotina
-- Gatilhos condicionais simples
-- Suporte assistido por IA para sugestoes de rotina
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-04-25T00:00:00+00:00"
+}
+```
 
-## Exemplos de Gatilhos
+## Endpoints de Atividades
+
+As rotas de atividades ficam em:
 
 ```text
-se dia_da_semana = terca
-entao mostrar checklist "saida para terapia"
+/activities
 ```
+
+Operacoes previstas:
 
 ```text
-se atividade = escola
-entao mostrar cartoes "mochila", "lanche", "uniforme"
+POST   /activities
+GET    /activities
+GET    /activities/{activity_id}
+PUT    /activities/{activity_id}
+DELETE /activities/{activity_id}
 ```
+
+Exemplo de criacao:
+
+```json
+{
+  "title": "Saida para terapia",
+  "description": "Preparar mochila e checklist de saida.",
+  "status": "pending",
+  "has_changes": false
+}
+```
+
+## Testes
+
+Execute todos os testes:
+
+```bash
+pytest
+```
+
+Ou rode suites especificas:
+
+```bash
+pytest tests/test_activity_service.py
+pytest tests/test_priority_advisor.py
+pytest tests/test_activity_routes.py
+```
+
+Observacao: os testes de rota usam `TestClient`. Caso haja incompatibilidade local entre versoes de Python, Starlette, AnyIO ou HTTPX, valide primeiro as versoes instaladas no ambiente virtual.
+
+## Arquitetura
+
+Estrutura principal:
 
 ```text
-se houve_mudanca = verdadeiro
-entao destacar secao "o que mudou"
+app/
+├── api/
+│   └── activity_routes.py
+├── models/
+│   └── activity.py
+├── repositories/
+│   └── activity_repository.py
+├── services/
+│   ├── activity_service.py
+│   └── priority_advisor.py
+└── main.py
 ```
 
-## Roadmap de Releases
+Camadas:
 
-### v0.1.0 - Base da API
+- `api`: expoe rotas HTTP e traduz erros para respostas da API.
+- `models`: define contratos Pydantic de entrada e saida.
+- `repositories`: concentra persistencia inicial em memoria.
+- `services`: concentra regras de negocio.
+- `PriorityAdvisor`: sugere prioridade por heuristica local ou IA opcional.
 
-- Criar estrutura inicial FastAPI
-- Implementar health check
-- Definir modelos principais
-- Criar endpoints basicos de agenda
-- Adicionar documentacao inicial
+## Uso da IA
 
-### v0.2.0 - Cartoes e Checklists
+O projeto funciona sem custo de API por padrao.
 
-- Implementar CRUD de cartoes visuais
-- Implementar checklists por atividade
-- Associar cartoes a itens de rotina
-- Criar testes unitarios iniciais
+Se `OPENAI_API_KEY` nao estiver configurada, o `PriorityAdvisor` usa heuristica local baseada em:
 
-### v0.3.0 - Temporizadores
+- termos como terapia, consulta, medicamento, saida e urgente;
+- atividades proximas do horario atual;
+- presenca de checklist ou temporizador;
+- indicacao de mudanca na rotina.
 
-- Adicionar temporizadores por atividade
-- Definir duracao estimada das tarefas
-- Criar endpoints para iniciar, pausar e finalizar temporizadores
-- Registrar status da atividade
+Para habilitar chamada opcional a OpenAI:
 
-### v0.4.0 - Mudancas na Rotina
+```bash
+export OPENAI_API_KEY="sua-chave"
+```
 
-- Implementar secao "o que mudou"
-- Permitir marcacao de alteracoes no dia
-- Destacar mudancas relevantes na agenda
-- Adicionar historico simples de mudancas
+Variaveis opcionais:
 
-### v0.5.0 - Gatilhos Contextuais
+```bash
+export OPENAI_PRIORITY_MODEL="gpt-4.1-mini"
+export OPENAI_BASE_URL="https://api.openai.com/v1"
+```
 
-- Criar motor simples de regras condicionais
-- Implementar gatilhos por dia da semana
-- Implementar gatilhos por atividade
-- Adicionar exemplos de regras predefinidas
+A chamada externa possui timeout e fallback obrigatorio. Se a API externa falhar, demorar ou retornar valor invalido, a prioridade local e usada automaticamente.
 
-### v0.6.0 - Apoio por IA
+Prioridades aceitas:
 
-- Integrar servico de IA para sugestoes de rotina
-- Gerar checklists assistidos por contexto
-- Sugerir adaptacoes para mudancas inesperadas
-- Registrar prompts e respostas relevantes
+```text
+low
+medium
+high
+```
 
-### v1.0.0 - MVP Estavel
+## Limitacoes Atuais
 
-- Consolidar endpoints principais
-- Melhorar validacoes e tratamento de erros
-- Adicionar testes de integracao
-- Preparar documentacao para uso inicial em produto
-- Definir guia basico de deploy
+- Persistencia apenas em memoria.
+- Dados sao perdidos ao reiniciar a aplicacao.
+- Ainda nao ha autenticacao ou autorizacao.
+- Rotas de atividades ainda precisam ser conectadas ao `app/main.py`.
+- Cartoes visuais, checklists, temporizadores e "o que mudou" ainda estao planejados para evolucao.
+- Integracao com IA e opcional e limitada a sugestao de prioridade.
+- Nao ha banco de dados, migrations ou camada de configuracao dedicada.
+
+## Proximos Passos
+
+- Conectar `activity_routes` ao `app/main.py`.
+- Adicionar testes automatizados ao pipeline de desenvolvimento.
+- Implementar persistencia em banco de dados.
+- Criar endpoints para cartoes visuais.
+- Criar endpoints para checklists por atividade.
+- Implementar temporizadores.
+- Implementar secao "o que mudou".
+- Evoluir gatilhos contextuais.
+- Documentar exemplos completos de uso da API.
+- Preparar configuracao por ambiente.
+- Definir estrategia de deploy.

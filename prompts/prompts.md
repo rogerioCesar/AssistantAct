@@ -111,3 +111,53 @@ Resposta em checklist.
 
 prompt 17 - Commits
 Existem muitos diffs e muitas camadas da aplicacao ainda sem commit. Utilize conventional commits para cada uma das camadas em separado e faca os commits para mim.
+
+
+Prompt 18 - Testes do service
+Contexto: Tenho ActivityService com CRUD de atividades.
+Objetivo: Gerar suite Pytest cobrindo criacao, listagem, atualizacao, exclusao e caso de erro por ID inexistente.
+Estilo: Testes claros, nomes descritivos e fixtures simples.
+Resposta: Codigo completo de tests/test_activity_service.py.
+
+Prompt 19 = Test PriorityAdvisor
+Contexto: PriorityAdvisor possui heuristica local e fallback quando chamada externa
+falha.
+Objetivo: Gerar testes para os tres niveis de prioridade e para fallback.
+Estilo: Usar monkeypatch quando necessario.
+Resposta: Codigo de tests/test_priority_advisor.py.
+
+Prompt 20 - Testes de API at
+Contexto: API FastAPI com endpoints CRUD de /activities.
+Objetivo: Criar testes de rota com TestClient para status 201, 200, 204 e 404.
+Estilo: Isolar dependencia de repositorio para evitar estado global entre testes.
+Resposta: Codigo de tests/test_activity_routes.py.
+
+Prompt 21 - Refatoracao DRY/SRP =
+Analise os arquivos app/services/task_service.py e app/repositories/task_repository.py.
+Objetivo: Sugerir refatoracao com foco em DRY e SRP sem mudar comportamento externo.
+Resposta: 1) lista de mudancas propostas 2) patch sugerido por arquivo.
+
+Prompt 22 - Readme final tecnico
+Contexto: MVP de micro-API de tarefas com prioridade assistida por IA.
+Objetivo: Gerar README completo com instalacao, execucao, testes, arquitetura, uso da IA, limitacoes e proximos passos.
+Estilo: Markdown profissional e objetivo.
+Resposta: README inteiro.
+
+Prompt 23 - Revisao final de qualidade
+Com base no codigo e nos testes atuais, gere um checklist com:
+- Riscos tecnicos restantes
+- Gaps de cobertura de teste
+- Melhorias prioritarias para a proxima release
+Resposta em bullets curtos.
+
+0k, agora que temos bastantes testes podemos executar para verificar se esta tudo correto. Avalie para mim
+
+Pode fazer os commits com as devidas mensagens
+
+Prompt 24 - Makefile
+Contexto: Projeto FastAPI com comandos de instalar dependencias, executar API e rodar testes.
+Objetivo: Gerar Makefile com targets install, run e test.
+Estilo: Simples e portavel.
+Resposta: Conteudo completo de Makefile.
+
+Eu queria ver a api funcionando. Rode ela pra mim e mostre alguns casos de cliente criando task e listando task

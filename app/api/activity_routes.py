@@ -11,17 +11,17 @@ activity_service = ActivityService()
 
 
 @router.post("", response_model=ActivityOut, status_code=status.HTTP_201_CREATED)
-def create_activity(activity: ActivityCreate) -> ActivityOut:
+async def create_activity(activity: ActivityCreate) -> ActivityOut:
     return activity_service.create(activity)
 
 
 @router.get("", response_model=list[ActivityOut], status_code=status.HTTP_200_OK)
-def list_activities() -> list[ActivityOut]:
+async def list_activities() -> list[ActivityOut]:
     return activity_service.list()
 
 
 @router.get("/{activity_id}", response_model=ActivityOut, status_code=status.HTTP_200_OK)
-def get_activity(activity_id: UUID) -> ActivityOut:
+async def get_activity(activity_id: UUID) -> ActivityOut:
     activity = activity_service.get_by_id(activity_id)
     if activity is None:
         raise HTTPException(
@@ -33,7 +33,7 @@ def get_activity(activity_id: UUID) -> ActivityOut:
 
 
 @router.put("/{activity_id}", response_model=ActivityOut, status_code=status.HTTP_200_OK)
-def update_activity(activity_id: UUID, activity: ActivityUpdate) -> ActivityOut:
+async def update_activity(activity_id: UUID, activity: ActivityUpdate) -> ActivityOut:
     updated_activity = activity_service.update(activity_id, activity)
     if updated_activity is None:
         raise HTTPException(
@@ -45,7 +45,7 @@ def update_activity(activity_id: UUID, activity: ActivityUpdate) -> ActivityOut:
 
 
 @router.delete("/{activity_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_activity(activity_id: UUID) -> None:
+async def delete_activity(activity_id: UUID) -> None:
     deleted = activity_service.delete(activity_id)
     if not deleted:
         raise HTTPException(
