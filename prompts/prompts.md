@@ -184,8 +184,15 @@ Resposta em checklist objetivo)
 0k, atualize o readme para mim para que tenha essas correcões
 
 Faça os comits em das alterações em separados
+
 Prompt 27 - Checklist de release
 Contexto: Vou publicar a versao v1.0.@ no GitHub.
 Objetivo: Gerar checklist final com itens tecnicos e de documentacao para release.~
 Estilo: Checkbox Markdown.
 Resposta: Lista completa.
+
+Prompt 28 - Script de demo tecnica
+Contexto: Preciso apresentar o MVP em 5 minutos para stakeholders tecnicos.
+Objetivo: Criar roteiro com tempos por bloco e comandos para mostrar no terminal.
+Estilo: Direto, sem marketing.
+Resposta: Roteiro em Markdown num arquivo em docs que não será subido no github .
