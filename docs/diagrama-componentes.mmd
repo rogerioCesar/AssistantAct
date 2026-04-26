@@ -1,10 +1,9 @@
-```mermaid
 flowchart TD
-    Client[Cliente / Frontend] --> API[FastAPI API Layer]
-    API --> Service[Service Layer]
-    Service --> Advisor[PriorityAdvisor]
-    Service --> Repository[Repository Layer]
-    Repository --> Storage[(Banco de dados / Persistencia)]
+    Client["Cliente / Frontend"] --> API["Camada de API (FastAPI)"]
+    API --> Service["Camada de Serviço"]
+    Service --> Advisor["PriorityAdvisor"]
+    Service --> Repository["Camada de Repositório"]
+    Repository --> Storage[(Banco de dados / Persistência)]
 
     Advisor --> Service
     Storage --> Repository
@@ -12,17 +11,16 @@ flowchart TD
     Service --> API
     API --> Client
 
-    subgraph API_Layer[API]
+    subgraph API_Layer["API"]
         API
     end
 
-    subgraph Domain_Layer[Aplicacao]
+    subgraph Domain_Layer["Aplicação"]
         Service
         Advisor
     end
 
-    subgraph Data_Layer[Dados]
+    subgraph Data_Layer["Dados"]
         Repository
         Storage
     end
-```
