@@ -1,6 +1,6 @@
 # Backlog do MVP
 
-## Release 1 - Core
+## Release 1 - Núcleo
 
 - [ ] **RF01 - Healthcheck da API**
   - Critérios de aceite:
@@ -32,7 +32,7 @@
 
 - [ ] **RT01 - Estrutura inicial do projeto**
   - Critérios de aceite:
-    - [ ] O projeto deve manter diretórios separados para rotas, schemas, serviços e testes.
+    - [ ] O projeto deve manter diretórios separados para rotas, contratos, serviços e testes.
     - [ ] A aplicação FastAPI deve iniciar a partir de `app/main.py`.
     - [ ] As dependências devem estar declaradas em `requirements.txt`.
     - [ ] Arquivos locais e ambiente virtual devem estar ignorados no `.gitignore`.
@@ -65,17 +65,17 @@
   - Critérios de aceite:
     - [ ] Deve existir teste para `GET /health`.
     - [ ] Deve existir teste para consulta de agenda diária.
-    - [ ] Deve existir teste para validação de schema dos principais endpoints.
+    - [ ] Deve existir teste para validação de contrato dos principais endpoints.
     - [ ] Os testes devem rodar com `pytest`.
 
 - [ ] **RT03 - Validação e contratos**
   - Critérios de aceite:
-    - [ ] Entradas da API devem ser validadas com schemas Pydantic.
+    - [ ] Entradas da API devem ser validadas com contratos Pydantic.
     - [ ] Respostas principais devem possuir modelos de saída definidos.
     - [ ] Erros de validação devem retornar resposta padronizada do FastAPI.
     - [ ] A documentação OpenAPI deve carregar sem erro.
 
-## Release 3 - Entrega Final
+## Release 3 - Entrega final
 
 - [ ] **RF08 - Apoio assistido por IA**
   - Critérios de aceite:

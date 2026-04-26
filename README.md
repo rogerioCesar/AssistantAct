@@ -1,16 +1,16 @@
-# Agenda Diaria Assistida por IA
+# Agenda Diária Assistida por IA
 
-MVP de micro-API em FastAPI para gerenciamento de atividades de rotina, com foco em apoio a usuarios autistas por meio de agenda diaria, cartoes visuais, checklists, temporizadores, secao "o que mudou" e sugestao de prioridade assistida por IA.
+MVP de micro-API em FastAPI para gerenciamento de atividades de rotina, com foco em apoio a usuários autistas por meio de agenda diária, cartões visuais, checklists, temporizadores, seção "o que mudou" e sugestão de prioridade assistida por IA.
 
 ## Objetivo
 
-Fornecer uma base simples, testavel e extensivel para organizar atividades diarias com suporte contextual.
+Fornecer uma base simples, testável e extensível para organizar atividades diárias com suporte contextual.
 
-A API permite representar atividades da rotina, sugerir prioridade automaticamente e preparar a evolucao para recursos como cartoes visuais, checklists e gatilhos do tipo:
+A API permite representar atividades da rotina, sugerir prioridade automaticamente e preparar a evolução para recursos como cartões visuais, checklists e gatilhos do tipo:
 
 ```text
-se terca-feira = terapia
-entao mostrar checklist de saida
+se terça-feira = terapia
+então mostrar checklist de saída
 ```
 
 ## Stack
@@ -21,11 +21,11 @@ entao mostrar checklist de saida
 - Uvicorn
 - Pytest
 - HTTPX
-- OpenAI API opcional para sugestao de prioridade
+- OpenAI API opcional para sugestão de prioridade
 
-## Instalacao
+## Instalação
 
-### 1. Clone o repositorio
+### 1. Clone o repositório
 
 ```bash
 git clone <url-do-repositorio>
@@ -45,7 +45,7 @@ No Windows:
 .venv\Scripts\activate
 ```
 
-### 3. Instale as dependencias
+### 3. Instale as dependências
 
 Com Makefile:
 
@@ -59,19 +59,19 @@ Ou diretamente com pip:
 pip install -r requirements.txt
 ```
 
-## Configuracao
+## Configuração
 
-A API funciona sem arquivo `.env` e sem chave da OpenAI. Nesse caso, a prioridade das atividades e sugerida por heuristica local.
+A API funciona sem arquivo `.env` e sem chave da OpenAI. Nesse caso, a prioridade das atividades é sugerida por heurística local.
 
-Para habilitar a integracao opcional com LLM, copie o exemplo:
+Para habilitar a integração opcional com LLM, copie o exemplo:
 
 ```bash
 cp .env.example .env
 ```
 
-Depois preencha `OPENAI_API_KEY` no arquivo `.env`. Nunca versionar `.env` com chave real.
+Depois preencha `OPENAI_API_KEY` no arquivo `.env`. Nunca versione `.env` com chave real.
 
-## Execucao
+## Execução
 
 Rode a API localmente:
 
@@ -115,7 +115,7 @@ As rotas de atividades ficam em:
 /activities
 ```
 
-Operacoes disponiveis:
+Operações disponíveis:
 
 ```text
 POST   /activities
@@ -125,14 +125,14 @@ PUT    /activities/{activity_id}
 DELETE /activities/{activity_id}
 ```
 
-Codigos HTTP principais:
+Códigos HTTP principais:
 
 ```text
 201 Created      atividade criada
-200 OK           consulta ou atualizacao concluida
+200 OK           consulta ou atualização concluída
 204 No Content   atividade removida
-404 Not Found    atividade nao encontrada
-422 Unprocessable Entity payload invalido
+404 Not Found    atividade não encontrada
+422 Unprocessable Entity payload inválido
 ```
 
 ### Criar atividade
@@ -141,9 +141,9 @@ Codigos HTTP principais:
 curl -X POST http://127.0.0.1:8000/activities \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Saida para terapia",
-    "description": "Preparar mochila e checklist de saida.",
-    "period": "manha",
+    "title": "Saída para terapia",
+    "description": "Preparar mochila e checklist de saída.",
+    "period": "manhã",
     "status": "pending",
     "has_changes": false
   }'
@@ -154,10 +154,10 @@ Resposta esperada:
 ```json
 {
   "id": "8d584339-d9a8-4928-9588-ea49e8637957",
-  "title": "Saida para terapia",
-  "description": "Preparar mochila e checklist de saida.",
+  "title": "Saída para terapia",
+  "description": "Preparar mochila e checklist de saída.",
   "scheduled_time": null,
-  "period": "manha",
+  "period": "manhã",
   "status": "pending",
   "priority": "high",
   "visual_card_ids": [],
@@ -209,7 +209,7 @@ Ou diretamente com Pytest:
 pytest
 ```
 
-Suites especificas:
+Suítes específicas:
 
 ```bash
 pytest tests/test_activity_service.py
@@ -250,24 +250,24 @@ HTTP request
 
 Camadas:
 
-- `api`: expoe rotas HTTP e traduz erros para respostas da API.
-- `models`: define contratos Pydantic de entrada e saida.
-- `repositories`: concentra persistencia inicial em memoria.
-- `services`: concentra regras de negocio.
-- `PriorityAdvisor`: sugere prioridade por heuristica local ou IA opcional.
+- `api`: expõe rotas HTTP e traduz erros para respostas da API.
+- `models`: define contratos Pydantic de entrada e saída.
+- `repositories`: concentra persistência inicial em memória.
+- `services`: concentra regras de negócio.
+- `PriorityAdvisor`: sugere prioridade por heurística local ou IA opcional.
 
 ## Uso da IA
 
-O projeto funciona sem custo de API por padrao.
+O projeto funciona sem custo de API por padrão.
 
-Quando `OPENAI_API_KEY` nao esta configurada, o `PriorityAdvisor` usa heuristica local baseada em:
+Quando `OPENAI_API_KEY` não está configurada, o `PriorityAdvisor` usa heurística local baseada em:
 
-- termos como terapia, consulta, medicamento, saida e urgente;
-- atividades proximas do horario atual;
-- presenca de checklist ou temporizador;
-- indicacao de mudanca na rotina.
+- termos como terapia, consulta, medicamento, saída e urgente;
+- atividades próximas do horário atual;
+- presença de checklist ou temporizador;
+- indicação de mudança na rotina.
 
-Quando `OPENAI_API_KEY` esta configurada, a API chama o endpoint `/responses` da OpenAI para sugerir a prioridade da atividade. A IA nao cria atividades automaticamente; ela apenas classifica a prioridade como:
+Quando `OPENAI_API_KEY` está configurada, a API chama o endpoint `/responses` da OpenAI para sugerir a prioridade da atividade. A IA não cria atividades automaticamente; ela apenas classifica a prioridade como:
 
 ```text
 low
@@ -275,7 +275,7 @@ medium
 high
 ```
 
-Variaveis usadas:
+Variáveis usadas:
 
 ```env
 OPENAI_API_KEY=
@@ -287,31 +287,31 @@ Exemplo de atividade que tende a receber prioridade alta:
 
 ```json
 {
-  "title": "Consulta medica",
-  "description": "Separar documentos e sair com antecedencia.",
+  "title": "Consulta médica",
+  "description": "Separar documentos e sair com antecedência.",
   "has_changes": true
 }
 ```
 
-A chamada externa possui timeout e fallback obrigatorio. Se a OpenAI falhar, demorar ou retornar valor invalido, a prioridade local e usada automaticamente.
+A chamada externa possui timeout e fallback obrigatório. Se a OpenAI falhar, demorar ou retornar valor inválido, a prioridade local é usada automaticamente.
 
-## Limitacoes Atuais
+## Limitações Atuais
 
-- Persistencia apenas em memoria.
-- Dados sao perdidos ao reiniciar a aplicacao.
-- Ainda nao ha autenticacao ou autorizacao.
-- Cartoes visuais, checklists, temporizadores e "o que mudou" ainda estao planejados para evolucao.
-- Integracao com IA e opcional e limitada a sugestao de prioridade.
-- Nao ha banco de dados, migrations ou camada de configuracao dedicada.
+- Persistência apenas em memória.
+- Dados são perdidos ao reiniciar a aplicação.
+- Ainda não há autenticação ou autorização.
+- Cartões visuais, checklists, temporizadores e "o que mudou" ainda estão planejados para evolução.
+- Integração com IA é opcional e limitada à sugestão de prioridade.
+- Não há banco de dados, migrations ou camada de configuração dedicada.
 
-## Proximos Passos
+## Próximos Passos
 
-- Implementar persistencia em banco de dados.
-- Criar endpoints para cartoes visuais.
+- Implementar persistência em banco de dados.
+- Criar endpoints para cartões visuais.
 - Criar endpoints para checklists por atividade.
 - Implementar temporizadores.
-- Implementar secao "o que mudou".
+- Implementar seção "o que mudou".
 - Evoluir gatilhos contextuais.
-- Ampliar testes de validacao de payload e contratos HTTP.
-- Preparar configuracao por ambiente.
-- Definir estrategia de deploy.
+- Ampliar testes de validação de payload e contratos HTTP.
+- Preparar configuração por ambiente.
+- Definir estratégia de deploy.
