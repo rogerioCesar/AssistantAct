@@ -15,7 +15,7 @@ entao mostrar checklist de saida
 
 ## Stack
 
-- Python
+- Python 3.11+
 - FastAPI
 - Pydantic v2
 - Uvicorn
@@ -47,28 +47,55 @@ No Windows:
 
 ### 3. Instale as dependencias
 
+Com Makefile:
+
+```bash
+make install
+```
+
+Ou diretamente com pip:
+
 ```bash
 pip install -r requirements.txt
 ```
+
+## Configuracao
+
+A API funciona sem arquivo `.env` e sem chave da OpenAI. Nesse caso, a prioridade das atividades e sugerida por heuristica local.
+
+Para habilitar a integracao opcional com LLM, copie o exemplo:
+
+```bash
+cp .env.example .env
+```
+
+Depois preencha `OPENAI_API_KEY` no arquivo `.env`. Nunca versionar `.env` com chave real.
 
 ## Execucao
 
 Rode a API localmente:
 
 ```bash
-uvicorn app.main:app --reload
+make run
 ```
 
-Acesse a documentacao interativa:
+Ou diretamente com Uvicorn:
+
+```bash
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+URLs principais:
 
 ```text
-http://localhost:8000/docs
+API:  http://127.0.0.1:8000
+Docs: http://127.0.0.1:8000/docs
 ```
 
 Healthcheck:
 
-```text
-GET /health
+```bash
+curl http://127.0.0.1:8000/health
 ```
 
 Resposta esperada:
@@ -88,7 +115,7 @@ As rotas de atividades ficam em:
 /activities
 ```
 
-Operacoes previstas:
+Operacoes disponiveis:
 
 ```text
 POST   /activities
@@ -98,15 +125,74 @@ PUT    /activities/{activity_id}
 DELETE /activities/{activity_id}
 ```
 
-Exemplo de criacao:
+Codigos HTTP principais:
+
+```text
+201 Created      atividade criada
+200 OK           consulta ou atualizacao concluida
+204 No Content   atividade removida
+404 Not Found    atividade nao encontrada
+422 Unprocessable Entity payload invalido
+```
+
+### Criar atividade
+
+```bash
+curl -X POST http://127.0.0.1:8000/activities \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Saida para terapia",
+    "description": "Preparar mochila e checklist de saida.",
+    "period": "manha",
+    "status": "pending",
+    "has_changes": false
+  }'
+```
+
+Resposta esperada:
 
 ```json
 {
+  "id": "8d584339-d9a8-4928-9588-ea49e8637957",
   "title": "Saida para terapia",
   "description": "Preparar mochila e checklist de saida.",
+  "scheduled_time": null,
+  "period": "manha",
   "status": "pending",
-  "has_changes": false
+  "priority": "high",
+  "visual_card_ids": [],
+  "checklist_id": null,
+  "timer_id": null,
+  "has_changes": false,
+  "created_at": "2026-04-25T22:44:20.856644Z",
+  "updated_at": null
 }
+```
+
+### Listar atividades
+
+```bash
+curl http://127.0.0.1:8000/activities
+```
+
+### Buscar atividade por ID
+
+```bash
+curl http://127.0.0.1:8000/activities/<activity_id>
+```
+
+### Atualizar atividade
+
+```bash
+curl -X PUT http://127.0.0.1:8000/activities/<activity_id> \
+  -H "Content-Type: application/json" \
+  -d '{"status": "done"}'
+```
+
+### Remover atividade
+
+```bash
+curl -X DELETE http://127.0.0.1:8000/activities/<activity_id>
 ```
 
 ## Testes
@@ -114,10 +200,16 @@ Exemplo de criacao:
 Execute todos os testes:
 
 ```bash
+make test
+```
+
+Ou diretamente com Pytest:
+
+```bash
 pytest
 ```
 
-Ou rode suites especificas:
+Suites especificas:
 
 ```bash
 pytest tests/test_activity_service.py
@@ -125,7 +217,7 @@ pytest tests/test_priority_advisor.py
 pytest tests/test_activity_routes.py
 ```
 
-Observacao: os testes de rota usam `TestClient`. Caso haja incompatibilidade local entre versoes de Python, Starlette, AnyIO ou HTTPX, valide primeiro as versoes instaladas no ambiente virtual.
+Os testes de rota usam `httpx.AsyncClient` com `ASGITransport` para exercitar a API sem depender de servidor HTTP externo.
 
 ## Arquitetura
 
@@ -145,6 +237,17 @@ app/
 └── main.py
 ```
 
+Fluxo principal:
+
+```text
+HTTP request
+-> activity_routes
+-> ActivityService
+-> ActivityRepository
+-> PriorityAdvisor
+-> HTTP response
+```
+
 Camadas:
 
 - `api`: expoe rotas HTTP e traduz erros para respostas da API.
@@ -157,29 +260,14 @@ Camadas:
 
 O projeto funciona sem custo de API por padrao.
 
-Se `OPENAI_API_KEY` nao estiver configurada, o `PriorityAdvisor` usa heuristica local baseada em:
+Quando `OPENAI_API_KEY` nao esta configurada, o `PriorityAdvisor` usa heuristica local baseada em:
 
 - termos como terapia, consulta, medicamento, saida e urgente;
 - atividades proximas do horario atual;
 - presenca de checklist ou temporizador;
 - indicacao de mudanca na rotina.
 
-Para habilitar chamada opcional a OpenAI:
-
-```bash
-export OPENAI_API_KEY="sua-chave"
-```
-
-Variaveis opcionais:
-
-```bash
-export OPENAI_PRIORITY_MODEL="gpt-4.1-mini"
-export OPENAI_BASE_URL="https://api.openai.com/v1"
-```
-
-A chamada externa possui timeout e fallback obrigatorio. Se a API externa falhar, demorar ou retornar valor invalido, a prioridade local e usada automaticamente.
-
-Prioridades aceitas:
+Quando `OPENAI_API_KEY` esta configurada, a API chama o endpoint `/responses` da OpenAI para sugerir a prioridade da atividade. A IA nao cria atividades automaticamente; ela apenas classifica a prioridade como:
 
 ```text
 low
@@ -187,26 +275,43 @@ medium
 high
 ```
 
+Variaveis usadas:
+
+```env
+OPENAI_API_KEY=
+OPENAI_PRIORITY_MODEL=gpt-4.1-mini
+OPENAI_BASE_URL=https://api.openai.com/v1
+```
+
+Exemplo de atividade que tende a receber prioridade alta:
+
+```json
+{
+  "title": "Consulta medica",
+  "description": "Separar documentos e sair com antecedencia.",
+  "has_changes": true
+}
+```
+
+A chamada externa possui timeout e fallback obrigatorio. Se a OpenAI falhar, demorar ou retornar valor invalido, a prioridade local e usada automaticamente.
+
 ## Limitacoes Atuais
 
 - Persistencia apenas em memoria.
 - Dados sao perdidos ao reiniciar a aplicacao.
 - Ainda nao ha autenticacao ou autorizacao.
-- Rotas de atividades ainda precisam ser conectadas ao `app/main.py`.
 - Cartoes visuais, checklists, temporizadores e "o que mudou" ainda estao planejados para evolucao.
 - Integracao com IA e opcional e limitada a sugestao de prioridade.
 - Nao ha banco de dados, migrations ou camada de configuracao dedicada.
 
 ## Proximos Passos
 
-- Conectar `activity_routes` ao `app/main.py`.
-- Adicionar testes automatizados ao pipeline de desenvolvimento.
 - Implementar persistencia em banco de dados.
 - Criar endpoints para cartoes visuais.
 - Criar endpoints para checklists por atividade.
 - Implementar temporizadores.
 - Implementar secao "o que mudou".
 - Evoluir gatilhos contextuais.
-- Documentar exemplos completos de uso da API.
+- Ampliar testes de validacao de payload e contratos HTTP.
 - Preparar configuracao por ambiente.
 - Definir estrategia de deploy.
