@@ -23,6 +23,9 @@ pip-wheel-metadata/
 .env
 !.env.example
 
+# Documentos locais
+docs/demo-tecnica.local.md
+
 # Testes e cobertura
 .pytest_cache/
 .coverage
