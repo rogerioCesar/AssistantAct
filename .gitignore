@@ -25,6 +25,7 @@ pip-wheel-metadata/
 
 # Documentos locais
 docs/demo-tecnica.local.md
+prompts/
 
 # Testes e cobertura
 .pytest_cache/
