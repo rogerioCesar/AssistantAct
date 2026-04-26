@@ -154,10 +154,38 @@ Resposta em bullets curtos.
 
 Pode fazer os commits com as devidas mensagens
 
+Eu queria ver a api funcionando. Rode ela pra mim e mostre alguns casos de cliente criando task e listando task
+
+Entao quer dizer que ainda faltavam cobertura de testes porque alguns endpoints ainda nao haviam sido testados, avalie
+como aumentar a cobertura desses testes
+
+Pode fazzer os commit
+
+
 Prompt 24 - Makefile
 Contexto: Projeto FastAPI com comandos de instalar dependencias, executar API e rodar testes.
 Objetivo: Gerar Makefile com targets install, run e test.
 Estilo: Simples e portavel.
 Resposta: Conteudo completo de Makefile.
 
-Eu queria ver a api funcionando. Rode ela pra mim e mostre alguns casos de cliente criando task e listando task
+Prompt 25 - .env.example 
+Contexto: 0 projeto usa integracao opcional de LLM.
+Objetivo: Criar arquivo .env.example com variaveis necessarias e valores placeholder seguros.
+Estilo: Minimalista.
+Resposta: Apenas conteudo do arquivo.
+
+Prompt 26 - Revisao de README
+Analise meu README e responda:
+1) 0 que falta para ser reproduzivel em maquina limpa?
+2) Quais secoes estao fracas para onboarding tecnico?
+3) Como melhorar a secao de uso da IA?
+Resposta em checklist objetivo)
+
+0k, atualize o readme para mim para que tenha essas correcões
+
+Faça os comits em das alterações em separados
+Prompt 27 - Checklist de release
+Contexto: Vou publicar a versao v1.0.@ no GitHub.
+Objetivo: Gerar checklist final com itens tecnicos e de documentacao para release.~
+Estilo: Checkbox Markdown.
+Resposta: Lista completa.
