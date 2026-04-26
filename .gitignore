@@ -21,7 +21,6 @@ pip-wheel-metadata/
 # FastAPI / servidor local
 *.log
 .env
-.env.*
 !.env.example
 
 # Testes e cobertura
