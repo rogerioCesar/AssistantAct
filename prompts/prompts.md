@@ -196,3 +196,5 @@ Contexto: Preciso apresentar o MVP em 5 minutos para stakeholders tecnicos.
 Objetivo: Criar roteiro com tempos por bloco e comandos para mostrar no terminal.
 Estilo: Direto, sem marketing.
 Resposta: Roteiro em Markdown num arquivo em docs que não será subido no github .
+
+Pode fazer os commits das alterações em diff
